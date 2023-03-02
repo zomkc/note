@@ -1,0 +1,82 @@
+依赖安装:
+1.yum -y install gcc pcre-devel zlib-devel openssl-devel
+下载nginx安装包
+2.wget https://nginx.org/download/nginx-1.22.0.tar.gz
+解压
+3.tar -zxvf nginx-1.22.0.tar.gz
+
+
+4.cd nginx-1.22.0
+5.mkdir -p /usr/local/nginx
+指定安装目录  ./configure --prefix=/usr/local/nginx
+6.安装: make && make install
+
+
+目录结构
+conf/nginx.conf	nginx配置文件
+html				存放静态文件(html,css,js等)
+logs				日志目录,存放日志文件
+sbin/nginx		二进制文件,用于启动,停止nginx服务
+
+
+查看版本:	./nginx -v
+检查配置文件正确性	./nginx -t
+启动nginx		./nginx
+停止nginx		./nginx -s stop
+启动完成后可以查看nginx进程:		ps -ef | grep nginx
+重新加载配置文件:		./nginx -s reload
+
+
+nginx配置文件(conf/nginx.conf)整体分为三个部分
+全局块		和nginx运行相关的全局配置
+events块		和网络连接相关的配置
+http块		代理,缓存,日志记录,虚拟主机配置
+	http全局块
+		server全局块
+		location块
+注意:	http块可以配置多个server块,
+每个server块中可以配置多个location块
+
+
+部署静态资源
+server{
+	listen 80;	#监听端口
+	server_name localhost;	#服务器名称
+	location / { #匹配客户端请求url
+		root html;	#指定静态资源根目录
+		index index.html;	指定默认首页
+
+		#反向代理配置,将请求转发到指定服务器
+		rewrite		#url重写
+		proxy_pass http://192.168.200.131;
+	}
+}
+
+
+===============================
+配置负载均衡
+
+upstream targetserver{ #upstream指令可以定义一组服务器
+	server 192.168.200.130;
+	server 192.168.200.131;
+}
+
+server{
+	listen 8080;
+	server_name localhost;
+	location / {
+		proxy_pass http://targetserver
+	}
+}
+
+负载均衡策略:
+轮询		默认方式
+weight	权重方式
+ip_hash	根据ip分配方式
+least_conn	依据最少连接方式
+url_hash		依据url分配方式
+fair			依据响应时间
+
+
+
+

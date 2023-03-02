@@ -1,0 +1,766 @@
+oracle课堂笔记
+连接命令 
+(1)conn[ect]
+用法: conn 用户名/密码@网络服务名 [as sysdba/sysoper]
+当用特权用户身份连接时，必须带上 as sysdba 或是 as sysoper
+案例:  conn scott/123456
+(2)disc[onnect]
+说明:该命令用来断开与当前数据库的连接
+
+(3)passw[ord]此命令只适用于SYSTEM
+说明:该命令用于修改用户的密码.如果要想修改其它用户的密码，需要用sys/system登陆.
+
+(4)show user
+说明：显示当前用户名
+
+(5)exit
+说明：该命令会断开与数据库的连接，同时会退出sql*plus	
+
+显示和设置环境变量
+概述：可以用来控制输出的各种格式。
+(1)linesize
+  说明:设置显示行的宽度,默认是80个字符
+  sql>show linesize
+  sql>set linesize 90
+(2)pagesize
+  说明:设置每页显示的行数目,默认是14,用法和linesize一样。至于其它环境参数的使用也是大同小异
+
+Spool c:/笔记.txt
+Spool off （结束）
+“/”执行上一条语句
+Edit（修改错误的语句）修改完成输入“/”执行
+“--”单行注释
+/**/多行注释
+查看表结构：desc emp(常用)
+清屏  host cls
+set timing  on/off(on表示开启Oracle中语句执行时间的计算)
+
+
+Oracle中所有的密码都忘了，怎么办？
+解决方法：启动SQLPLUS，提示输入用户名，然后输入sqlplus/as sysdba，密码为空。
+提示连接到信息，连接成功！
+然就可以：
+解锁用户：
+alter user 用户名 account unlock;
+锁定用户：
+alter user 用户名 account lock;
+修改密码：
+alter user 用户名 identified by 新密码;
+修改管理员密码：
+alter user sys identified by 新密码;
+
+
+创建用户: 
+备注: 在创建用户的时候,必须要有权限的角色才可以
+基本语法：create user 用户名 identified by 密码
+基本用户: create user dahai identified by 123456
+备注: 刚创建的用户是没有任何权限的,登录都不可以
+修改密码1:
+语法: password 用户名	
+案例: password dahai
+修改密码2：
+语法:alter user 用户名 identified by 新密码;
+案例:alter user dahai identified by 123456;
+
+创建用户
+例子: sql> create user dongshao identified by m123
+	       	default tablespace users
+		      temporary tablespace temp
+		      quota 3m on users;
+identified by 表明该用户dongshao 将用数据库方式验证 
+default tablespace users //用户的表空间在users上
+temporary tablespace temp //用户dongshao的临时表建在temp 空间
+quota 3m on users //表明用户dongshao 建立的数据对象(表,索引,视图,pl/sql块..)
+最大只能是3m刚刚创建的用户是没有任何权限的,因此,需要dba给该用户授权.
+sql>grant connect to dongshao 
+如果你希望该用户建表没有空间的限制
+sql>grant resource to dongshao
+如果你希望该用户成为dba
+sql>grant dba to dongshao
+
+删除用户
+概述：一般以dba的身份去删除某个用户,如果用其它用户去删除用户则需要具有 drop user的权限。
+比如 drop user 用户名 【cascade】
+在删除用户时,注意
+如果要删除的用户,已经创建了表,那么就需要在删除的时候带上cascade
+drop user dongdhao;
+drop user dongdhao cascade;
+
+常用的系统权限:
+create session	连接数据库	
+create table		建表
+create view 	建视图	             
+create public synonym	键同义词
+create procedure 建过程、函数、包
+create trigger	 建触发器
+create cluster	建簇
+显示系统权限:
+select * from system_privilege_map order by name;
+如果用其它用户来授予系统权限，则要求该用户必须具有grant any privilege的系统
+权限在授予系统权限时，可以带有with admin option选项
+案例演示
+案例:grant create session,create table to xiaohai ;
+案例:grant create session,create table to xiaohai2 with admin option;
+
+回收系统权限
+一般情况下，回收系统权限是dba来完成的，如果其它的用户来回收系统权限，
+要求该用户必须具有相应系统权限及转授系统权限的选项(with admin option）。
+备注:系统权限级联收回问题？[不是级联回收!]
+1.使用system用户,将dongshao1的登录权限撤销
+语法:revoke 系统权限1,系统权限2,.. from 用户名;
+案例:revoke create session from xiaohai2;
+
+对象权限(select,insert,update,delete,...)
+语法： grant 对象权限 on 数据库对象 to 用户名
+案例： grant select on emp to monkey
+解释: 将emp表的查询(select)功能给monkey这个用户
+回收权限(联级回收)
+revoke 对象权限 on 数据库对象  from	 用户名[,角色名][,public]
+
+角色
+㈠建立角色(不验证)
+如果角色是公用的角色，可以采用不验证的方式建立角色.
+create role 角色名 not identified;
+create role mydongshao1 not identified;  没有任何权限
+㈡建立角色(数据库验证)
+采用这样的方式时,角色名、口令存放在数据库中。当激活该角色时，
+必须提供口令.在建立这种角色时，需要为其提供口令
+create role 角色名 identified by dongshao
+
+删除角色
+使用drop role,一般是dba来执行,如用其它用户则要求该用户具有drop any role系统权限
+drop role  角色名
+
+使用profile管理用户口令
+概述：profile是口令限制,资源限制的命令集合,当建立数据时,
+oracle会自动建立名称为default的profile,当建立用户没有指定profile选项,
+那oracle就会将default分配给用户。
+(1)帐户锁定
+概述: 指定该帐户(用户)登陆时最多可以输入密码的次数,
+也可以指定用户锁定的时间(天)一般用dba的身份去执行该命令
+例子:指定laoxie这个用户最多只能尝试3次登陆,锁定时间为2天，让我们看看怎么实现。
+(1)帐户锁定
+创建profile文件
+create profile lock_account limit failed_login_attempts 3 
+password_lock_time 2;
+创建一个用户
+create user laoxie identified by 123456;
+设置一个登陆的权限
+grant create session to laoxie;
+给用户设置锁定文件
+alter user laoxie profile lock_account;
+用户锁定以后,解除锁定
+alter user laoxie account unlock;
+
+例子:给前面创建的用户tea创建一个profile文件,
+要求该用户每隔10天要修改自家的登陆密码,宽限期为2天。看看怎么做.
+create profile myprofile limit password_life_time 10 
+password_grace_time 2;
+
+删除profile
+概述:当不需要某个profile文件时，可以删除该文件.
+drop profile profile文件名
+
+表空间
+1．创建一个简单的表空间
+语法: create tablespace 名称  datafile  路径   size 20M
+create tablespace test datafile 'f:\database\oracle\test_data.dbf' size 20M; 
+2．指定数据文件的可扩展性
+语法: create tablespace 名称 datafile 路径 size 20M autoextend on   Next 5m 
+create tablespace test datafile 'f:\database\oracle\test_data.dbf' size 20M autoextend on
+3．指定数据文件的增长幅度
+语法: create tablespace 名称 datafile 路径 size 20M autoextend on  Next 5m 
+create tablespace test datafile 'f:\database\oracle\test_data.dbf' size 20M autoextend On Next 5m 
+创建表空间
+语法: create tablespace 名称 datafile 路径 size 20M autoextend on  Next 5m 
+案例:create tablespace test datafile 'f:\data.dbf' size 20M autoextend On Next 5m  Maxsize 500M
+size 20M : 大小为20M
+autoextend on: 可扩展性
+Next 5m  : 增长幅度
+Maxsize 500M:最大尺寸
+
+查看表空间是否创建成功：
+select file_name, tablespace_name from dba_data_files order by file_name; 
+
+．为一个表空间创建多个数据文件
+create tablespace 名称 datafile 文件路径 size 20M，文件路径 size 20M
+删除表空间
+drop tablespace 名称;
+记录和数据文件一起删除
+drop tablespace 名称 including contents and datafiles;
+
+
+表:
+1. varchar2(size) : 变长 
+2. char(size) : 定长(固定长度的值),如果输入的长度值不够,则使用空格填充
+3. number(p,s): 数值
+4. date : 时间
+面试题: 请问在数据库中char和varchar2之间的区别在哪里? 谁的查询速度更快?
+答: char是定长,而varchar2是变长. 定长的速度会更加快速,因为在进行查询比对的时候
+    char(定长)不需要计算字符长度,直接进行比对,而varchar2(变长)首先要计算长度,然后在进行比对.
+创建表
+语法:
+create table 表名(
+  字段名称1   字段类型,
+  字段名称2   字段类型,
+  字段名称3   字段类型,
+  .....
+)
+案例: 创建一个学生表
+create table students(
+  id number,  --学生的编号
+  name varchar2(10), --学生的名称
+  tel char(11),  --学生的电话
+  create_time date default sysdate  --默认为系统时间
+);
+增加数据
+  语法1: insert into 表名(字段1,字段2,..) values(值1,值2,...)
+  语法2: insert into 表名 values(值1,值2,值3..) : 必须和表结构一一对应
+  案例: insert into students(id,name,tel) values(9527,'柳岩',1388888888);
+  错误案例:insert into students(id,name,tel) values(9527,'柳岩',1388888888888);
+删除数据
+  语法1: delete from 表名; (慎用)清空表中的所有数据
+  语法2: delete from 表名 where 条件
+  案例:  delete from students where id=9257;
+修改数据
+  语法1: update 表名 set 字段1=值1,字段2=值2,...  (慎用) 修改表中的所有数据
+  语法2: update 表名 set 字段1=值1,字段2=值2,...  where  条件
+  案例1: update students set tel=11111111111; 会将表中所有的数据tel修改成11111111111
+  案例2: update students set tel=13545454545 where id=9528;
+查询数据
+  语法1: select * from 表名
+  语法2: select * from 表名  where 条件
+  案例: select * from students;
+删除:
+  drop table students;
+
+子查询创建表
+根据一个表来创建另外的一个表：（表结构和表内容一起被复制）
+语法:create table 新表名 as select * from 存在的表名
+案例:create table t_test1 as select * from dept
+复制学生表 create table stu as select * from students;
+只复制表的结构
+语法:create table 新表名 as select * from 存在的表名 where 1=2
+案例:create table t_test as select * from dept where 1=2
+复制学生表 create table stu2 as select * from students where 1=2;
+复制表内容
+语法:insert into 新表名 select * from 存在的表名
+案例: insert into t_test select * from dept
+复制表内容: insert into stu2 select * from students
+复制指定字段的内容
+要求: 复制scott用户下面的emp表中的(编号,名称,职位,工资)内容到一个新的表
+create table stu3(
+  id number,  --编号
+  name varchar2(10), --名称
+  job varchar2(11),  --职位
+  price number(6,2)  --价格
+);
+语法:insert into 要插入数据的表名 select 字段名称1,字段名称2,..... from 原数据的表名;
+语法:insert into 要插入数据的表名(字段1,字段2,..) select 字段名1,字段名2,... from 原数据的表名;
+案例:insert into stu3 select empno,ename,job,sal from emp;
+
+修改表结构
+追加新列
+语法:alter table 表名 add 列名 类型;
+案例:alter table stu3 add address varchar2(30);
+修改列
+语法:alter table 表名 modify 列名 类型;
+案例:alter table stu3 modify address varchar2(40)
+修改默认值的设置：
+语法:alter table 表名 modify 列名 default 内容;
+案例:alter table stu3 modify address default '双流区';
+重命名列
+语法:alter table 表名 rename column 旧列名 to 新列名
+案例:alter table stu3 rename column address to addr;
+修改表的名称(表的名称也不要修改)
+语法:rename 旧表名 to 新表名;
+案例:rename student2 to do;
+删除列(不要轻易删除一个字段)
+语法:alter table 表名 drop column 字段名称
+案例:alter table stu3 drop column addr
+删除表，但是删除的表没有真的删除，被放在了Oracle的回收站中。
+drop table stu3
+drop table stu3  purge(不会进入回收站)
+
+问题: 如果在进行查询的过程中,发现我们的中文出现了乱码或者是"?"处理办法:
+鼠标放到"我的电脑"->右键属性->高级系统设置->高级->环境变量
+在系统变量中添加一下环境变量: 点击新建将以下两个环境变量添加就可以了
+变量名:变量值
+NLS_LANG :AMERICAN_AMERICA.ZHS16GBK
+LANG:zh_CN.GBK
+重启pl/sql就可以了
+
+
+添加表注释
+语法:comment on table 表名 is 表注解;
+案例:comment on table student is '学生表';
+添加每个字段的注释
+语法:comment on column 表名.字段  is 注解;
+案例:comment on column student.id  is '学号';
+
+约束:
+主键约束 primary key(唯一并且不能为空,一个表只能有一个主键)
+create table beauty(
+  id  number primary key,
+  name varchar2(10)
+);
+为我们创建的表添加一个数据
+语法:inser into 表名 values (值1,值2);
+insert into beauty values(1,'张三');
+外键约束
+默认值:(当用户在添加数据的时候,如果没有输入内容,则使用默认的内容)
+create table beauty(
+  id  number primary key,
+  name varchar2(10) default '柳岩'
+);
+insert into beauty values(1);
+唯一:(数据唯一,但是可以为空)
+create table beauty2(
+  id  number primary key,
+  name varchar2(10) default '柳岩',
+  email varchar2(30) unique
+);
+insert into beauty2 values(4,'杨幂','');
+范围
+create table beauty3(
+  id  number primary key,
+  name varchar2(10) default '柳岩',
+  email varchar2(30) unique,
+  sex  varchar2(4)  check (sex in ('男','女')),
+  sage number check (sage between 18 and 25)
+);
+insert into beauty3 values(1,'杨幂','11@qq.com','女','20');
+不能为空
+create table beauty4(
+  id  number primary key,
+  name varchar2(10) default '柳岩',
+  email varchar2(30) unique,
+  sex  varchar2(4)  check (sex in ('男','女')),
+  sage number check (sage between 18 and 25),
+  address varchar2(20) not null 
+);
+insert into beauty4 values(1,'杨幂','11@qq.com','女','20','双流');
+创建一个完整的学生表
+create table teacher(
+ id number primary key,
+ name varchar2(20) not null,
+ tel char(11) not null unique,
+ ....
+)
+comment on table teacher is '教师表';
+comment on column teacher.id  is '编号';
+comment on column teacher.name  is '姓名';
+comment on column teacher.tel  is '电话';
+
+
+ORACLE中默认的日期格式'DD-MON-YY'  
+dd 日子(天),mon 月份 yy 2位的年 '09-6月-99' 1999年6月9号
+改日期的默认格式
+alter session set nls_date_format = 'yyyy-mm-dd';
+
+emp表中的字段含义
+EMPNO     ENAME      JOB      MGR         HIREDATE  SAL  COMM   DEPTNO
+员工编号  员工姓名  员工岗位 员工领导编号  入职日期  工资  奖金  部门编号
+
+使用算数表达式
+?显示每个雇员的年工资
+使用列的别名
+as(可以省略) 别名
+案例:select sal*12+nvl(comm,0) as 年收入 from emp;
+案例:select sal*12+nvl(comm,0) 年收入 from emp;
+如何处理null值
+使用nvl函数来处理
+语法:nvl(字段名称,0) 如果字段有值就使用,没有就使用0
+案例:select sal*12+nvl(comm,0) 年收入 from emp;
+如何连接字符串(||)
+select sal*12+nvl(comm,0) || '元' from emp;
+？如何显示某人是什么岗位
+select job from emp where ename='king';
+使用where子句
+语法:  where  条件判断
+?如何显示工资高于3000的员工
+select * from emp where sal>=3000;
+?如何查找1982.1.1后入职的员工
+select * from emp where HIREDATE>'1/1月/1982';
+select * from emp where HIREDATE>'1-01月-1982';
+?如何显示工资在2000到3000的员工情况
+select * from emp where sal between 2000 and 3000;
+select * from emp where sal>=2000 and sal <= 3000;
+?查询SMITH 的薪水,工作,所在部门
+select sal,job,deptno from emp where ename='SMITH';
+
+请尽可能多的举例说出如何在查询过程中优化sql语句
+
+请尽可能多的写出linux命令
+
+
+
+01.查询每个雇员的编号、姓名、职位。
+select empno,ename,job from emp;
+02.查询每个雇员的职位和年薪。
+03.查询每个雇员的职位，使用DISTINCT消除掉显示的重复行记录。
+04.计算出每个雇员的基本年薪，同时查询出雇员的编号、姓名。
+05.每个雇员每个月公司会补贴饭食200元，交通补助300元，计算年薪（年薪=(工资+奖金)*12）。
+06.查询基本工资高于2000的全部雇员信息。
+07.查询出smith的信息。
+08.查询出所有不是CLERK的详细信息。
+09.查询出所有销售人员(SALESMAN)的基本信息，并且要求销售人员的工资高于1300。
+10.查询出工资范围在1500~3000之间的全部雇员信息（包含1500和3000）。
+11.查询出所有经理或者是销售人员的信息，并且要求这些人的基本工资高于1500。
+12.要求查询出所有在1981年雇佣的雇员信息。
+13.查询所有领取奖金的雇员信息（comm不为空）。
+14.查询所有领取奖金高于100的雇员信息。
+15.查询出雇员编号是7369、7566、9999的雇员信息。
+select * from emp where empno=7369 or empno=7566 or empno=9999
+select * from emp where empno in(7369,7566,9999)
+
+去除重复:distinct——过滤掉多余的重复记录只保留一条
+语法: select distinct 字段名称 from 表
+案例: select distinct job from emp;
+范围:between——在某个范围
+语法: select * from 表名 where 字段名称 between 开始值  and  结束值;
+语法: select * from 表名 where 字段名称 not between 开始值  and  结束值;
+案例: select * from emp where sal>=1500 and sal<=3000
+案例: select * from emp where sal between 1500 and 3000;
+案例: select * from emp where sal not between 1500 and 3000;
+in（属于若干个孤立的值）
+语法: select * from 表名 where 字段名 in(值1,值2,...);
+案例: select * from emp where empno in(7369,7566,9999);
+and && 必须  
+语法: select * from 表名 where 条件  and 条件
+案例: select * from emp where job='MANAGER' and sal>2500
+or || 或者
+语法: select * from 表名 where 条件  or  条件
+案例: select * from emp where empno=7369 or empno=7566 or empno=9999
+null（没有值  空值）
+零和null是不一样的，null表示空值，没有值；零表示一个确定的值
+null不能参与如下运算：<>    !=     =
+null可以参与如下运算：is null 或者   is not null
+
+语法1: select * from 表名 where 字段名  is null
+案例:  select * from emp where comm is null;     --输出奖金为空的员工的信息
+
+语法2: select * from 表名 where 字段名  is not null
+案例:  select * from emp where comm is not null;	--输出奖金不为空的员工的信息
+
+排序: order by
+如果不指定排序的标准，则默认是升序，升序用asc表示，默认可以省略不写，降序用desc表示
+为一个字段指定的排序标准并不会对另一个字段产生影响
+强烈建议为第一个字段都指定排序的标准
+语法0: select * from 表名 order by a                a升序
+语法1: select * from 表名 order by a  desc          a降序  
+语法2: select * from 表名 order by a, b;		        a 和b都是升序
+语法3: select * from 表名 order by a, b desc;	      a升序， b降序
+语法4: select * from 表名 order by a desc, b;	      a降序， b升序
+语法5: select * from 表名 order by a desc, b desc;  a降序， b降序
+案例 : select * from emp  order by sal desc,HIREDATE;
+
+模糊查询: like
+语法1: select * from 表名 where 字段 like '%a%'  --字段只要含有A就输出
+语法2: select * from 表名 where 字段 like 'a%'  --字段只要以A开头
+语法3: select * from 表名 where 字段 like '%a'  --字段只要以A结尾
+语法4: select * from 表名 where 字段 like '_a%'  --字段第二个字符为a(_占位符)
+语法5: select * from 表名 where 字段 like '%a__%'  --字段倒数第三个字符为a
+
+
+思考：在 emp 表中查询工资高于500或是岗位为MANAGER的雇员，
+同时还要满足他们的姓名首字母为大写的 J。
+select * from emp where (sal>500 or job='MANAGER') and ENAME  like 'J%';
+
+
+常用的聚合函数：
+AVG(ALL|DISTINCT expression)    数字表达式中所有值的平均值
+语法: select avg(字段) from 表名;
+SUM(ALL|DISTINCT expression)  表达式中所有值的和
+语法: select sum(字段) from 表名
+COUNT(ALL|DISTINCT expression) 表达式中值的个数
+语法: select count(字段) from 表名
+备注: 在进行字段统计个数的时候,不会统计空值
+COUNT(*)        选定的行数
+语法: select count(*) from 表名
+MAX(expression)     表达式中的最高值
+语法; select max(字段) from 表名
+MIN(expression)     表达式中的最低值
+语法: select min(字段) from 表名
+
+?如何显示所有员工中最高工资和最低工资
+select max(sal),min(sal) from emp;
+?显示所有员工的平均工资和工资总和
+select avg(sal),sum(sal) from emp;
+?计算共有多少员工
+select count(*) from emp;
+
+扩展要求：
+?请显示工资最高的员工的名字，工作岗位
+select max(sal) from emp;
+select ename,job from emp where sal=(select max(sal) from emp);
+?请显示工资高于平均工资的员工信息
+select * from emp where sal>(select avg(sal) from emp);
+
+分组
+group by 和 having子句
+group by 用于对查询的结果分组统计,
+having子句用于限制分组显示结果.
+语法: select * from 表名 group by 字段  having 条件
+
+?如何显示每个部门的平均工资和最高工资
+select deptno,avg(sal),max(sal) from emp group by deptno;
+?显示每个部门的每种岗位的平均工资和最低工资
+?显示平均工资低于2000的部门号和它的平均工资
+
+扩展要求：
+显示工资低于2000，部门平均工资低于1000的部门号和部门平均工资
+select deptno, avg(sal) from emp 
+where sal<2000 group by deptno having avg(sal)<1000;
+
+
+where,order by, group by,having,like
+
+select * from emp  where job='CLERK' order by sal desc;
+
+多表联查
+语法: select 字段名1,字段名2,..  from 表1,表2 where 条件
+
+显示雇员名,雇员工资及所在部门的名字
+select e.ename,e.sal,d.dname from emp e, dept d where e.deptno=d.deptno;
+请显示SMITH上级的姓名和部门名称
+select a.ename,b.ename,c.dname from emp a , emp b , dept c where
+a.ename = 'SMITH' and a.mgr = b.empno and b.deptno = c.deptno;
+
+
+select a.ename,b.ename, c.dname from emp a
+inner join emp b on a.mgr=b.empno 
+inner join dept c on b.deptno=c.deptno
+where a.ename='SMITH';
+
+子查询
+子查询:是指嵌入在其它sql语句中的select语句,也叫嵌套查询
+
+如何显示与SMITH同一部门的所有员工?
+select DEPTNO from emp where ename = 'SMITH'; 
+select ename,deptno from emp where deptno=(select DEPTNO from emp where ename = 'SMITH');
+
+select ename,deptno from emp where deptno=20
+
+
+
+
+
+
+Select ename,job from emp 
+where job in (Select job from emp where ename in('SMITH','SCOTT','WARD'));
+ 
+
+
+请思考:如何查询和部门10的工作相同的雇员的名字、岗位、工资、部门号
+1. 第一步: 首先要查询出10号部门的信息(岗位)
+select JOB from emp where DEPTNO = 10;
+2.在将查询的结果当成条件进行二次筛选
+select ENAME,JOB,SAL,DEPTNO from emp 
+where JOB in (select JOB from emp where DEPTNO = 10);
+
+
+
+请思考:如何显示工资比部门30的所有员工的工资高的员工的姓名、工资和部门号
+select ename,sal,deptno from emp 
+where sal>all (select sal from emp where deptno=30);
+
+select ename,sal,deptno from emp
+where sal> (select max(sal) from emp where deptno=30);
+
+请思考:如何显示工资比部门30的任意一个员工的工资高的员工的姓名、工资和部门号
+select ename,sal,deptno from emp where sal>any (select sal from emp where deptno=30);
+Select ename,sal,deptno from emp  where sal>(select min(sal) from emp where deptno=30);
+
+请思考如何查询与smith的部门和岗位完全相同的所有雇员
+select job,DEPTNO from emp where ename='SMITH'; 
+select ename from emp 
+where job=(select job from emp where ename='SMITH') and deptno=(select deptno from emp where ename='SMITH');    
+多列子查询
+案例
+select * from emp 
+where (deptno,job) = (select deptno,job from emp where ename='SMITH');
+
+
+请思考：如何显示高于自己部门平均工资的员工的信息
+这里要用到数据查询的小技巧，把一个子查询当作一个临时表使用
+解法①
+select e1.*,e2.myavg  from 
+emp e1,(select avg(sal) myavg,deptno from emp group by deptno) e2 
+where e1.deptno=e2.deptno and e1.sal>e2.myavg
+
+select e1.* from emp e1 
+where e1.sal>(select avg(sal) from emp where deptno=e1.deptno)
+
+连接查询 union
+select ename,sal,job from emp where sal>2500
+ union 
+ select ename,sal,job from emp where job='MANAGER';
+ 
+多表联查
+inner join 连接多个表,必须是左右两边的数据相等才会把数据查询出来
+left  join 以左表为主,左表的数据都要全部查询出来,右表没有相等的数据则使用空表示
+right join 以右表为主,右表的数据都要全部查询出来,左表没有相等的数据则使用空表示
+
+
+select * from emp a
+left join dept b on a.deptno=b.deptno; 
+
+select * from emp a
+right join dept b on a.deptno=b.deptno; 
+
+
+42.查询出部门名称和这些部门的员工信息（数量、平均工资），同时列出那些没有员工的部门。
+select b.deptno,b.dname,count(a.job),avg(sal)
+from emp a
+right join dept b on
+a.deptno=b.deptno
+group by b.deptno,b.dname;
+
+查询部门号为10号的雇员名和部门号，以及不是10号的雇员名和部门号要求不显示部门号。
+
+
+分页:
+select * from 
+(select b.*,rownum rn from 
+(select e.* from emp e order by sal desc)b 
+where rownum<=20)c where c.rn>=11;
+
+
+分页
+1.首先做一个查询
+select * from emp
+2. 显示rownum 行号
+select b.*,rownum dongshao from (select * from emp) b;
+3.查询出小于等于10的数据
+select b.*,rownum dongshao from (select * from emp) b where rownum<=10;
+4.在将查询出来的数据当做子查询在查询一次
+select * from (select b.*,rownum dongshao from (select * from emp) b where rownum<=10)
+where dongshao>=1;
+
+分页查询只需要修改最里层的子查询条件即可.
+例如:排序,查询字段等.
+如果要修改查询的条数,需要修改开始数字和结束数字就可以了
+
+字符函数是oracle中最常用的函数，我们来看看有哪些字符函数:
+
+LOWER(char) 将字符串表达式char中的所有大写字母转换为小写字母  
+UPPER(char) 将字符串表达式char中的所有小写字母转换为大写字母  
+INITCAP(char) 首字母转换成大写 
+SUBSTR(char,start,length) 返回字符串表达式char中从第start开始的length个字符 
+LENGTH(char) 返回字符串表达式char的长度
+1、将所有员工的姓名按小写的方式显示      
+select lower(ename) from emp; 
+2、将所有员工的姓名按大写的方式显示      
+select upper(ename) from emp;
+3、显示正好为5个字符的员工的姓名         
+select ename from emp where length (ename)= 5;
+4、显示所有员工姓名的前三个字符          
+select substr(ename,0,3) from emp;
+5、以首字母大写的方式显示所有员工的姓名  
+select initcap(ename) from emp;
+6、以首字母小写的方式显示所有员工的姓名  
+select (lower(SUBSTR(ename,0,1)) || SUBSTR(ename,2,10)) from emp;
+
+字符函数是oracle中最常用的函数，我们来看看有哪些字符函数:
+replace(char1,search_string,replace_string) 替换
+instr(char1,char2,[,n[,m]])取子串在父字符串的位置
+?显示所有员工的姓名,用”母牛”替换所有“S“
+select replace(ename,'S','母牛') from emp;
+select instr(ename,'S') from emp;
+
+数学函数 
+round(n,[m]) 该函数用于执行四舍五入,如果省掉m，则四舍五入到整数;
+如果m是正数,则四舍五入到小数点的m位后.如果m是负数,则四舍五入到小数点的m位前
+trunc(n,[m]) 该函数用于截取数字.如果省掉m，就截去小数部分,
+如果m是正数就截取到小数点的m位后,如果m是负数,则截取到小数点的前m位
+mod(m,n)  取余
+floor(n) 返回小于或是等于n的最大整数
+ceil(n)  返回大于或是等于n的最小整数
+
+
+显示在一个月为30天的情况所有员工的日薪金,四舍五入.
+select round(sal/30,2) from emp;
+显示在一个月为30天的情况所有员工的日薪金,忽略余数.
+select trunc(sal/30) from emp;
+
+select floor(sal),sal from emp;
+select ceil(sal),sal from emp;
+
+
+介绍
+日期函数用于处理date类型的数据.
+默认情况下日期格式是dd-mon-yy 即12-7月-21
+(1)sysdate: 该函数返回系统时间
+(2)add_months(d,n)将日期加上特定月份
+Select add_months(sysdate,-8) result from dual
+(3)last_day(d):返回指定日期所在月份的最后一天
+Select last_day(sysdate) result from dual
+Select last_day(add_months(sysdate,2)) result from dual
+?查找已经入职33个月多的员工
+select * from emp where sysdate>add_months(hiredate,400);                    
+?显示满10年服务年限的员工的姓名和受雇日期.
+select ename,hiredate from emp where sysdate>add_months(hiredate,120);  
+?对于每个员工,显示其加入公司的天数.
+select ename,floor(sysdate-HIREDATE) from emp;
+?找出各月倒数第3天受雇的所有员工.
+select * from emp where HIREDATE = last_month(HIREDATE)-2;
+
+to_char(char,设置属性)
+yy: 两位数字的年份    2004-->04 
+yyyy: 四位数字的年份  2004年
+mm :两位数字的月份    8月-->08
+dd: 2位数字的天       30号-->30
+hh24: 8点－－》       20
+hh12: 8点－－》       08
+mi、ss                显示分钟\秒
+Day：                 星期
+select ename,to_char(hiredate,'yyyy-mm-dd,hh24:mi:ss') from emp;
+9:显示数字,并忽略前面0
+0:显示数字,如位数不足,则用0补齐
+.：在指定位置显示小数点
+,: 在指定位置显示逗号
+$: 在数字前加美元
+L: 在数字前加本地货币符号
+C: 在数字前加国际货币符号
+G:在指定位置显示组分隔符、
+D:在指定位置显示小数点符号(.)
+select ename,to_char(sal,'L99G999D99') from emp 
+select ename,to_char(sal,'$99G999D99') from emp;
+
+?显示1980年入职的所有员工
+select * from emp where to_char(hiredate,'yyyy') = 1980;
+?显示所有12月份入职的员工
+select * from emp where to_char(hiredate,'mm') =12;
+
+to_date
+函数to_date用于将字符串转换成date类型的数据.
+?能否按照中国人习惯的方式年-月-日添加日期
+insert into emp 
+values(9999,'大哥','MANAGER',7782,to_date('1995-11-12','yy-mm-dd'),88.8,66.66,10);
+
+
+select sys_context('userenv','db_name') from dual;
+select sys_context('userenv','language') from dual;
+select sys_context('userenv','session_user') from dual;
+
+
+视图：一张假表，数据都来至于表，视图的本质是一个sql语句。
+视图的主要目的时为了简化复杂查询，但不提高性能。所以在实
+际开发中当安全性要求比较高，就经常查询视图，而不直接查询
+表，可以通过视图修改原表，但是一般不要这样做。
+创建视图`
+注意：默认的情况下，scott用户不具有创建视图的权限，所有必须以管理员身份登录，然后授权。
+授权：grant create view to scott
+创建视图：
+语法： create view  视图名称 as  sql语句;
+案例:create view v_test as 
+(select e.ename,e.job,e.deptno,d.dname from emp e, dept d where e.deptno = d.deptno)
+查询视图：
+select * from v_test1
+查看视图结构：
+desc v_test1
+
+
+
+

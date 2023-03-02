@@ -1,0 +1,167 @@
+字体属性:
+font-family:设置文字字体
+font-size:设置字符大小
+font-style:设置字体样式(nomail正常,oblique斜体)
+font-weight:设置文字粗细
+font:设置文字各种属性
+
+
+
+文本属性:
+
+color:设置文本颜色
+line-height:设置行高
+letter-spacing:字符间距
+text-align:对其方式(left,center(居中),right)
+text-decoration:文字的修饰(none,underline,overline,line-through)
+
+
+
+伪类属性:
+
+:link:向未被访问的连接添加样式
+:visitend:向已被访问的连接添加样式
+:hover:当鼠标悬浮在元素上方时,向元素添加样式
+
+
+
+背景属性:
+
+
+background-color:背景颜色(#ff0000、red、rgb(255,0,0))
+background-image:背景图片(url(路径))
+background-repeat:背景图片是否重复(repeat、repeat-x、repeat-y、 no-repeat)
+Background-position:背景图像起始位置(center center或x% y%或xpos ypos)
+background-attachment:设置背景图像是固定还是滚动(scroll或fixed)
+background:设置背景的简写形式(url(1.jpg) no-repeat center center)
+
+
+边框属性:
+
+border:设置所有边框的属性 1px solid #333
+border-top:设置顶边框属性
+border-right:设置右边框属性
+border-botton:设置底边框属性
+border-left:设置左边框属性
+
+border-radius:允许你设置元素的外边框圆角。当使用一个半径时确定一个圆形
+当使用两个半径时确定一个椭圆。这个(椭)圆与边框的交集形成圆角效果。
+
+边框线型:
+none:无	solid实现   dotted点状线   dashed虚线   double双线   groove 3D凹槽边框
+
+
+
+内外边距:
+
+padding:同时设置四个内边距,顺序:上右下左(顺时针)
+padding-top:上填充距离
+padding-right:右填充距离
+padding-bottom:下填充距离
+padding-left:左填充距离
+
+margin:同时设置四个外边距,顺序:上右下左(顺时针)
+margin-top:上边距
+margin-right:右边距
+margin-bottom:下边距
+margin-left:左边距
+
+margin: auto:浏览器计算外边距(居中)
+
+overflow:hidden:溢出隐藏
+
+
+定位属性:
+
+position:规定元素的定位类型(absolute,fixed,relative,static)
+top:上边界之间的偏移
+right:右边界之间的偏移
+bottom:底边界之间的偏移
+left:左边界之间的偏移
+
+display:规定元素应该生成的框的类型(none,block,inline等)
+float:规定框是否浮动(left(左浮动),right(右浮动),none)
+clear:规定元素的哪一侧不允许其他浮动元素(left,right,both,none)
+overflow:当内容溢出元素框是发生的事情(hidden,visible,scroll,auto)
+
+visibility:规定元素是否可见,几十不可见的元素也会占据页面上的空间(hidden,visible)
+z-index:设置元素的堆叠顺序(auto,数值)
+cursor:规定要显示的光标类型(url,pointer,text,wait等)
+
+
+
+position属性:
+
+absolute:生成绝对定位的元素,相对于static定位外的第一个父元素进=进行定位.
+	元素位置通过left   top   right   bottom属性进行规定
+relative:生成相对定位的元素,相对于正常位置进行定位(0px 0px 0px 0px)
+	元素位置通过left   top   right   bottom属性进行规定
+fixed:生成固定定位的元素,相对于浏览器窗口进行定位
+	元素位置通过left   top   tight   botton属性进行规定
+static:默认值,没有定位
+
+
+
+display:显示属性
+
+none:此元素不会被显示
+block:此元素将显示为块级元素,此元素前后会带有换行符
+inline:默认,此元素会被显示为内联元素,元素
+inline-block:行内块元素
+table:此元素会作为块级表格来显示（类似 <table>），表格前后带有换行符 
+inline-table:此元素会作为内联表格来显示（类似 <table>），表格前后没有换行符
+table-row:此元素会作为一个表格行显示（类似 <tr>）
+table-cell :此元素会作为一个表格单元格显示（类似 <td> 和 <th>） 
+
+
+浮动与清理
+
+float:规定框是否浮动(left(左浮动),right(右浮动),none)
+clear:规定元素的哪一侧不允许其他浮动元素(left,right,both,none)
+
+
+
+
+1、默认值设置
+body,div,ul,li,ol,a,span,h1,h2 { margin:0px; padding:0px;}
+
+2、全局字体设置
+body{ font-size:12px; font-family: simsun,arial,helvetica; background:#fff; } 
+
+3、标题样式设置
+h1{padding:11px 0 0; margin-bottom:4px;font:normal 20px/30px 黑体;text-align:center;}
+h2 { padding:6px 0 0; margin-bottom:4px; font:normal 20px/30px 黑体; text-align:center; }
+h3{font-size:12px}
+h4{font-size:12px;font-weight:normal} 
+
+4、项目符号和编号
+ul,ol,li{ list-style: none ; } 
+
+5、图片(在IE6中,图片会被默认加上一个边框)
+img{ border:none; }
+
+6、超级链接
+a{ text-decoration:none; cursor:pointer; }
+a:link,a:visited{ color:#004276; }
+a:hover{ text-decoration:underline; color:#ba2636; } 
+
+7、清除与浮动
+.floatLeft{ float:left; }
+.floatRight{ float:right; }
+.clear{clear:both; }
+.blank10{height:10px; overflow:hidden; clear:both; } 
+
+第二种:
+.clearfix:before, .clearfix:after {   /* 清除浮动 */
+	display: table;
+	content: "";
+}
+
+8、字体颜色
+.black {color:#000;}
+.white {color:#fff;}
+.red {color:#e10007;}
+.grey {color:#454545;}
+.orange {color:#ff7200;}
+.blue {color:#3a8ecf;} 
+
