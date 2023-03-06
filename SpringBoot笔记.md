@@ -424,7 +424,7 @@ logging:
 
 日志输出格式控制:
 
-![QQ截图20230112134446](SpringBoot%E7%AC%94%E8%AE%B0.assets/QQ%E6%88%AA%E5%9B%BE20230112134446.png)
+![QQ截图20230112134446](assets/QQ%E6%88%AA%E5%9B%BE20230112134446.png)
 
 ```yaml
 #设置日志输出格式
@@ -486,11 +486,11 @@ class SpringBootTest {}
 
 @AutoConfigureMockMvc:  web环境虚拟测试
 
-![QQ截图20230113191628](SpringBoot%E7%AC%94%E8%AE%B0.assets/QQ%E6%88%AA%E5%9B%BE20230113191628.png)
+![QQ截图20230113191628](assets/QQ%E6%88%AA%E5%9B%BE20230113191628.png)
 
 
 
-![QQ截图20230113203004](SpringBoot%E7%AC%94%E8%AE%B0.assets/QQ%E6%88%AA%E5%9B%BE20230113203004.png)
+![QQ截图20230113203004](assets/QQ%E6%88%AA%E5%9B%BE20230113203004.png)
 
 
 

@@ -413,13 +413,13 @@ required=true:	表示引用类型赋值失败,程序正常运行,引用类型是
 
 ##### xml对比注解配置
 
-![QQ截图20221229174904](Spring%E7%AC%94%E8%AE%B0.assets/QQ%E6%88%AA%E5%9B%BE20221229174904-16723073616142.png)
+![QQ截图20221229174904](assets/QQ%E6%88%AA%E5%9B%BE20221229174904-16723073616142.png)
 
 
 
 ## AOP
 
-![](Spring%E7%AC%94%E8%AE%B0.assets/QQ%E6%88%AA%E5%9B%BE20220421095458.png)
+![](assets/QQ%E6%88%AA%E5%9B%BE20220421095458.png)
 
 
 
@@ -453,7 +453,7 @@ Aop就是动态代理的规范化,把动态代理的实现步骤,方式都定义
 
 4.Aop(Aspect Orient Programming):面向切面编程
 
-![](Spring%E7%AC%94%E8%AE%B0.assets/QQ%E6%88%AA%E5%9B%BE20220420084813.png)
+![](assets/QQ%E6%88%AA%E5%9B%BE20220420084813.png)
 
 
 
@@ -794,11 +794,11 @@ public PlatformTransactionManager transactionManager(Datasource datasource){
 
 事务相关配置	@Transactionl属性
 
-![QQ截图20221230122528](Spring%E7%AC%94%E8%AE%B0.assets/QQ%E6%88%AA%E5%9B%BE20221230122528.png)
+![QQ截图20221230122528](assets/QQ%E6%88%AA%E5%9B%BE20221230122528.png)
 
 事务传播行为
 
-![QQ截图20221230123218](Spring%E7%AC%94%E8%AE%B0.assets/QQ%E6%88%AA%E5%9B%BE20221230123218.png)
+![QQ截图20221230123218](assets/QQ%E6%88%AA%E5%9B%BE20221230123218.png)
 
 
 

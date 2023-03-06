@@ -144,4 +144,4 @@ docker	volume命令是数据卷操作,根据命令后跟随的command来确认�
 
 Dockerfile是一个文本文件,其中包含一个个的指令,用指令来说明要执行什么操作来构建镜像,每一个指令都会形成一层Layer
 
-![QQ截图20221027143903](Docker.assets/QQ%E6%88%AA%E5%9B%BE20221027143903.png)
+![QQ截图20221027143903](assets/QQ%E6%88%AA%E5%9B%BE20221027143903.png)

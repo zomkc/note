@@ -1176,7 +1176,7 @@ yum	install	xxx	下载安装
 
 ## jdk安装
 
-![QQ截图20220908114053](Linux%E7%AC%94%E8%AE%B0.assets/QQ%E6%88%AA%E5%9B%BE20220908114053.png)
+![QQ截图20220908114053](assets/QQ%E6%88%AA%E5%9B%BE20220908114053.png)
 
 
 

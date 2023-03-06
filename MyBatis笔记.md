@@ -514,4 +514,4 @@ separator:集合成员之间的分隔符
 
 
 
-![mybatis](MyBatis%E7%AC%94%E8%AE%B0.assets/mybatis.jpg)
+![mybatis](assets/mybatis.jpg)

@@ -99,7 +99,7 @@ public RestTemplate restTemplate(){
 
 ##### 负载均衡策略
 
-![QQ截图20221024185225](SpringCloud%E7%AC%94%E8%AE%B0.assets/QQ%E6%88%AA%E5%9B%BE20221024185225.png)
+![QQ截图20221024185225](assets/QQ%E6%88%AA%E5%9B%BE20221024185225.png)
 
 通过定义IRule实现可以修改负载均衡规则
 
@@ -642,7 +642,7 @@ Predicate Factory的作用: 读取用户定义的断言条件,对请求做出判
 
 spring提供了11种基本的Predicate工厂:
 
-![QQ截图20221026103555](SpringCloud%E7%AC%94%E8%AE%B0.assets/QQ%E6%88%AA%E5%9B%BE20221026103555.png)
+![QQ截图20221026103555](assets/QQ%E6%88%AA%E5%9B%BE20221026103555.png)
 
 
 
@@ -654,7 +654,7 @@ GatewayFilter是网关中提供的一种过滤器,可以对进入网关的请求
 
 spring提供了31种不同的路由过滤器工厂,列如:
 
-![QQ截图20221026104708](SpringCloud%E7%AC%94%E8%AE%B0.assets/QQ%E6%88%AA%E5%9B%BE20221026104708.png)
+![QQ截图20221026104708](assets/QQ%E6%88%AA%E5%9B%BE20221026104708.png)
 
 详细看spring cloud官方文档
 
@@ -739,7 +739,7 @@ GlobalFilter通过实现Ordered接口,或者添加@Order注解来指定order值,
 
 当过滤器的order值一样时,会按照 defaultFilter > 路由过滤器 > GlobalFilter的顺序执行
 
-![QQ截图20221026120231](SpringCloud%E7%AC%94%E8%AE%B0.assets/QQ%E6%88%AA%E5%9B%BE20221026120231.png)
+![QQ截图20221026120231](assets/QQ%E6%88%AA%E5%9B%BE20221026120231.png)
 
 
 
@@ -806,7 +806,7 @@ spring:
 
 ## MQ - 异步通信
 
-![QQ截图20221101083207](SpringCloud%E7%AC%94%E8%AE%B0.assets/QQ%E6%88%AA%E5%9B%BE20221101083207.png)
+![QQ截图20221101083207](assets/QQ%E6%88%AA%E5%9B%BE20221101083207.png)
 
 
 
@@ -1509,7 +1509,7 @@ GET /indexName/_search
 
 `function_score`
 
-![QQ截图20221103105354](SpringCloud%E7%AC%94%E8%AE%B0.assets/QQ%E6%88%AA%E5%9B%BE20221103105354.png)
+![QQ截图20221103105354](assets/QQ%E6%88%AA%E5%9B%BE20221103105354.png)
 
 ```http
 GET /hotel/_search
@@ -1823,7 +1823,7 @@ request.source().sort(SortBuilders
 
 复合查询:
 
-![QQ截图20221107102357](SpringCloud%E7%AC%94%E8%AE%B0.assets/QQ%E6%88%AA%E5%9B%BE20221107102357.png)
+![QQ截图20221107102357](assets/QQ%E6%88%AA%E5%9B%BE20221107102357.png)
 
 
 
@@ -2021,7 +2021,7 @@ spring:
 
 点击资源后面的流控按钮,就可以弹出表单,表单中可以添加流控规则
 
-![QQ截图20230207143335](SpringCloud%E7%AC%94%E8%AE%B0.assets/QQ%E6%88%AA%E5%9B%BE20230207143335.png)
+![QQ截图20230207143335](assets/QQ%E6%88%AA%E5%9B%BE20230207143335.png)
 
 其含义是限制 /order/{orderId} 这个资源的单机QPS为1,即每秒只允许一次访问,超出的请求会被拦截并报错
 
@@ -2089,11 +2089,11 @@ spring:
 
 ##### 热点参数限流
 
-前面的限流是统计访问某个资源的所有请求,判断是否超过QPS阈值.而热点限流是分别统计参数值相同的请求,判断是否超过QPS阈值![QQ截图20230208091701](SpringCloud%E7%AC%94%E8%AE%B0.assets/QQ%E6%88%AA%E5%9B%BE20230208091701.png)
+前面的限流是统计访问某个资源的所有请求,判断是否超过QPS阈值.而热点限流是分别统计参数值相同的请求,判断是否超过QPS阈值![QQ截图20230208091701](assets/QQ%E6%88%AA%E5%9B%BE20230208091701.png)
 
 ​	在热点参数限流的高级选项中,可以对部分参数设置例外配置:
 
-![QQ截图20230208091939](SpringCloud%E7%AC%94%E8%AE%B0.assets/QQ%E6%88%AA%E5%9B%BE20230208091939.png)
+![QQ截图20230208091939](assets/QQ%E6%88%AA%E5%9B%BE20230208091939.png)
 
 **注意:**	热点参数限流对默认的SpringMVC资源无效,需要使用@SentinelResource指定
 
@@ -2196,7 +2196,7 @@ public interface UserClient {
 
 ​	熔断降级是解决雪崩问题的重要手段.其思路是由**断路器**统计服务调用的异常比例、慢请求比例,如果超出阈值则会**熔断**该服务。即拦截该服务的一切请求;而当服务恢复时,断路器会放行访问该服务的请求
 
-![QQ截图20230208145037](SpringCloud%E7%AC%94%E8%AE%B0.assets/QQ%E6%88%AA%E5%9B%BE20230208145037.png)
+![QQ截图20230208145037](assets/QQ%E6%88%AA%E5%9B%BE20230208145037.png)
 
 断路器熔断策略有三种: 慢调用、异常比例、异常数
 
@@ -2204,7 +2204,7 @@ public interface UserClient {
 
 ​	慢调用: 业务的响应时长(RT)大于指定时长的请求认定为慢调用请求。如果请求数量超过设定的最小数量,慢调用比例大于设定的阈值,则触发熔断
 
-![QQ截图20230208150404](SpringCloud%E7%AC%94%E8%AE%B0.assets/QQ%E6%88%AA%E5%9B%BE20230208150404.png)
+![QQ截图20230208150404](assets/QQ%E6%88%AA%E5%9B%BE20230208150404.png)
 
 ​	RT超过500ms的调用是慢调用,统计最近10000ms内的请求,如果请求量超过10次,并且慢调用比例不低于0.5,则触发熔断,熔断时长为5秒,然后进入half-open状态,放行一次请求做测试
 
@@ -2212,7 +2212,7 @@ public interface UserClient {
 
 ​	异常比例或者异常数: 统计指定时间内的调用,如果调用次数超过指定请求数,并且出现异常的比例超过设定的比例阈值(或超过指定异常数),则触发熔断
 
-![QQ截图20230208152553](SpringCloud%E7%AC%94%E8%AE%B0.assets/QQ%E6%88%AA%E5%9B%BE20230208152553.png)
+![QQ截图20230208152553](assets/QQ%E6%88%AA%E5%9B%BE20230208152553.png)
 
 ​	统计最近1000ms内的请求,如果请求超过10次,并且异常比例不低于0.4,则触发熔断,熔断时间为5秒,然后进入half-open状态,放行一次请求做测试。
 
@@ -2225,7 +2225,7 @@ public interface UserClient {
 * 白名单: 来源(origin) 在白名单内的调用者允许访问
 * 黑名单: 来源在黑名单的调用者不允许访问
 
-![QQ截图20230208160330](SpringCloud%E7%AC%94%E8%AE%B0.assets/QQ%E6%88%AA%E5%9B%BE20230208160330.png)
+![QQ截图20230208160330](assets/QQ%E6%88%AA%E5%9B%BE20230208160330.png)
 
 例如,我们限定只允许从网关来的请求访问order-server,那么流控应用中就填写网关的名称
 
@@ -2384,17 +2384,17 @@ SentinelDashboard默认不支持nacos的持久化，需要修改源码。
 
 解压课前资料中的sentinel源码包：
 
-![image-20210618201340086](SpringCloud%E7%AC%94%E8%AE%B0.assets/image-20210618201340086.png)
+![image-20210618201340086](assets/image-20210618201340086.png)
 
 然后并用IDEA打开这个项目，结构如下：
 
-![image-20210618201412878](SpringCloud%E7%AC%94%E8%AE%B0.assets/image-20210618201412878.png)
+![image-20210618201412878](assets/image-20210618201412878.png)
 
 ##### 2. 修改nacos依赖
 
 在sentinel-dashboard源码的pom文件中，nacos的依赖默认的scope是test，只能在测试时使用，这里要去除：
 
-![image-20210618201607831](SpringCloud%E7%AC%94%E8%AE%B0.assets/image-20210618201607831.png)
+![image-20210618201607831](assets/image-20210618201607831.png)
 
 将sentinel-datasource-nacos依赖的scope去掉：
 
@@ -2411,7 +2411,7 @@ SentinelDashboard默认不支持nacos的持久化，需要修改源码。
 
 在sentinel-dashboard的test包下，已经编写了对nacos的支持，我们需要将其拷贝到main下。
 
-![image-20210618201726280](SpringCloud%E7%AC%94%E8%AE%B0.assets/image-20210618201726280.png)
+![image-20210618201726280](assets/image-20210618201726280.png)
 
 
 
@@ -2419,11 +2419,11 @@ SentinelDashboard默认不支持nacos的持久化，需要修改源码。
 
 然后，还需要修改测试代码中的NacosConfig类：
 
-![image-20210618201912078](SpringCloud%E7%AC%94%E8%AE%B0.assets/image-20210618201912078.png)
+![image-20210618201912078](assets/image-20210618201912078.png)
 
 修改其中的nacos地址，让其读取application.properties中的配置：
 
-![image-20210618202047575](SpringCloud%E7%AC%94%E8%AE%B0.assets/image-20210618202047575.png)
+![image-20210618202047575](assets/image-20210618202047575.png)
 
 在sentinel-dashboard的application.properties中添加nacos地址配置：
 
@@ -2437,11 +2437,11 @@ nacos.addr=localhost:8848
 
 另外，还需要修改com.alibaba.csp.sentinel.dashboard.controller.v2包下的FlowControllerV2类：
 
-![image-20210618202322301](SpringCloud%E7%AC%94%E8%AE%B0.assets/image-20210618202322301.png)
+![image-20210618202322301](assets/image-20210618202322301.png)
 
 让我们添加的Nacos数据源生效：
 
-![image-20210618202334536](SpringCloud%E7%AC%94%E8%AE%B0.assets/image-20210618202334536.png)
+![image-20210618202334536](assets/image-20210618202334536.png)
 
 
 
@@ -2451,19 +2451,19 @@ nacos.addr=localhost:8848
 
 修改src/main/webapp/resources/app/scripts/directives/sidebar/目录下的sidebar.html文件：
 
-![image-20210618202433356](SpringCloud%E7%AC%94%E8%AE%B0.assets/image-20210618202433356.png)
+![image-20210618202433356](assets/image-20210618202433356.png)
 
 
 
 将其中的这部分注释打开：
 
-![image-20210618202449881](SpringCloud%E7%AC%94%E8%AE%B0.assets/image-20210618202449881.png)
+![image-20210618202449881](assets/image-20210618202449881.png)
 
 
 
 修改其中的文本：
 
-![image-20210618202501928](SpringCloud%E7%AC%94%E8%AE%B0.assets/image-20210618202501928.png)
+![image-20210618202501928](assets/image-20210618202501928.png)
 
 
 
@@ -2471,7 +2471,7 @@ nacos.addr=localhost:8848
 
 运行IDEA中的maven插件，编译和打包修改好的Sentinel-Dashboard：
 
-![image-20210618202701492](SpringCloud%E7%AC%94%E8%AE%B0.assets/image-20210618202701492.png)
+![image-20210618202701492](assets/image-20210618202701492.png)
 
 
 
