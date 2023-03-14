@@ -1140,6 +1140,57 @@ PUT	/索引库名/_mapping
 
 
 
+##### 新版本变化
+
+Es7 及以上移除了 type 的概念。
+
+* 关系型数据库中两个数据表示是独立的，即使他们里面有相同名称的列也不影响使用，但 ES 中不是这样的。elasticsearch 是基于 Lucene 开发的搜索引擎，而 ES 中不同 type下名称相同的 filed 最终在 Lucene 中的处理方式是一样的。
+
+* 两个不同 type 下的两个 user_name，在 ES 同一个索引下其实被认为是同一个 filed，你必须在两个不同的 type 中定义相同的 filed 映射。否则，不同 type 中的相同字段名称就会在处理中出现冲突的情况，导致 Lucene 处理效率下降。
+
+* 去掉 type 就是为了提高 ES 处理数据的效率。Elasticsearch 7.x URL 中的 type 参数为可选。比如，索引一个文档不再要求提供文档类型。Elasticsearch 8.x不再支持 URL 中的 type 参数。
+
+  解决：
+
+  1）、将索引从多类型迁移到单类型，每种类型文档一个独立索引
+
+  2）、将已存在的索引下的类型数据，全部迁移到指定位置即可。详见数据迁移
+
+
+
+##### 数据迁移
+
+```http
+POST _reindex	[固定写法]
+{
+  "source": {
+    "index": "twitter"
+  },
+  "dest": {
+    "index": "new_twitter"
+  }
+}
+```
+
+将旧索的type下的数据进行迁移
+
+```http
+POST _reindex
+{
+  "source": {
+    "index": "twitter",
+    "type": "tweet"
+  },
+  "dest": {
+    "index": "tweets"
+  }
+}
+```
+
+
+
+
+
 #### 文档操作
 
 新增文档的DSL语法:
@@ -1226,6 +1277,15 @@ client = new RestHighLevelClient(RestClient.builder(
 
 //结束请求
 client.close();
+
+//或
+@Bean
+public RestHighLevelClient ESRestClient(){
+ RestHighLevelClient client = new RestHighLevelClient(RestClient.builder(
+     new HttpHost("zomkc.cn",9200,"http")
+     ));
+   return client;
+}
 ```
 
 
@@ -1264,35 +1324,40 @@ void DeleteHotelIndex() throws IOException {
 文档操作:
 
 ```java
-//新增文档
-@Test
-void testInit() throws IOException {
-    //根据id查询酒店数据
-    Hotel byId = hotelService.getById(45870L);
-    //酒店数据转换为文档类型
-    HotelDoc doc = new HotelDoc(byId);
+    //新增文档
+    @Test
+    public void test() throws IOException {
+        //1.准备request对象
+        IndexRequest request = new IndexRequest("users").id("1");
+        user user = new user();
+        user.setName("张三");
+        user.setAge(11);
+        //2.准备Json文档
+        request.source(JSON.toJSONString(user),XContentType.JSON);
+        //3.发送请求
+        IndexResponse index = client.index(request, RequestOptions.DEFAULT);
+//IndexResponse[index=users,type=_doc,id=1,version=1,result=created,seqNo=0,primaryTerm=1,shards={"total":2,"successful":1,"failed":0}]
+        System.out.println(index);
+    }
 
-    //1.准备request对象
-    IndexRequest request = new IndexRequest("hotel").id(doc.getId().toString());
-    //2.准备Json文档
-    request.source(JSON.toJSONString(doc),XContentType.JSON);
-    //3.发送请求
-    client.index(request,RequestOptions.DEFAULT);
-
-}
-
-//查询文档
- @Test
-void GetDocumentByid() throws IOException {
+    //查询文档
+    @Test
+    public void GetDocumentByid() throws IOException {
         //1.创建request对象
-        GetRequest request = new GetRequest("hotel","45870");
+        GetRequest request = new GetRequest("users","1");
         //2.发送请求得到结果
         GetResponse response = client.get(request, RequestOptions.DEFAULT);
         //3.解析结果
         String json = response.getSourceAsString();
 
-        HotelDoc jsonObject = JSON.parseObject(json,HotelDoc.class);
+        user jsonObject = JSON.parseObject(json,user.class);
         System.out.println(jsonObject);
+    }
+
+    @Data
+    class user{
+     private String name;
+     private Integer age;
     }
 ```
 
@@ -1350,7 +1415,7 @@ void BulkRequest() throws IOException {
 
 
 
-#### DSL查询语法
+#### Query DSL查询语法
 
 DSL	Query的分类
 
@@ -1396,31 +1461,49 @@ GET	/indexName/_search
 
 ##### 全文检索查询
 
-match查询:	全文检索查询的一种,会对用户输入内容分词,然后去倒排索引库检索
+`match`**匹配查询**:	全文检索查询的一种,会对用户输入内容分词,然后去倒排索引库检索
 
 ```http
-GET	/indexName/_search
+GET bank/_search
 {
-	"query": {
-		"match": {
-			"FIELD": "TEXT"
-		}
-	}
+  "query": {
+    "match": {
+      "address": "mill road"
+    }
+  }
 }
+# 最终查询出 address 中包含 mill 或者 road 或者 mill road 的所有记录，并给出相关性得分
 ```
 
-multi_match:	与match查询类似,只不过允许同时查询多个字段
+`match_phrase`**短语匹配**:	将需要匹配的值当成一个整体单词（不分词）进行检索
 
 ```http
-GET	/indexName/_search
+GET bank/_search
 {
-	"query": {
-		"multi_match": {
-			"query": "TEXT",
-			"fields": ["FIELD_1","字段_2"]
-		}
-	}
+  "query": {
+    "match_phrase": {
+      "address": "mill road"
+    }
+  }
 }
+# 查出 address 中包含 mill road 的所有记录，并给出相关性得分
+```
+
+
+
+`multi_match`**多字段匹配**:	与match查询类似,只不过允许同时查询多个字段
+
+```http
+GET bank/_search
+{
+  "query": {
+    "multi_match": {
+      "query": "mill",
+      "fields": [ "state" , "address" ]
+    }
+  }
+}
+# state 或者 address 包含 mill
 ```
 
 
@@ -1430,7 +1513,7 @@ GET	/indexName/_search
 * term: 根据词条精确查询
 * range: 根据值的范围查询
 
-term查询:
+term查询:	和 match 一样。匹配某个属性的值。全文检索字段用match，其他非 text 字段匹配用 term
 
 ```http
 GET /indexName/_search
@@ -1465,7 +1548,7 @@ GET /indexName/_search
 
 ##### 地理查询
 
-​	geo_bounding_box:	查询geo_point值落在某个矩形范围内的所有文档
+​	`geo_bounding_box`:	查询geo_point值落在某个矩形范围内的所有文档
 
 ```http
 GET /indexName/_search
@@ -1583,9 +1666,40 @@ GET /hotel/_search
 
 
 
+##### 结果过滤
+
+`filter`:并不是所有的查询都需要产生分数，特别是那些仅用于 “filtering”（过滤）的文档。为了不计算分数 Elasticsearch 会自动检查场景并且优化查询的执行
+
+```http
+GET bank/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match": {
+            "address": "mill"
+          }
+        }
+      ],
+      "filter": {
+        "range": {
+          "balance": {
+            "gte": 10000,
+            "lte": 20000
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+
+
 ##### 排序
 
-对搜索结果排序,默认是根据相关度算分( _sort)排序,,可以排序的字段有:
+`sort`对搜索结果排序,默认是根据相关度算分( _sort)排序,,可以排序的字段有:
 
 keyword类型,数值类型,地理坐标类型,日期类型等
 
@@ -1630,7 +1744,7 @@ GET /hotel/_search
 
 默认只返回top10的数据,如果要查询更多的数据,就需要修改分页参数了
 
-通过修改from,size参数来控制要返回的分页结果
+通过修改`from,size`参数来控制要返回的分页结果
 
 ```http
 #分页
@@ -1831,9 +1945,9 @@ request.source().sort(SortBuilders
 
 
 
-## 聚合
+### 聚合
 
-##### aggs代表聚合,与query同级
+**aggs代表聚合,与query同级**
 
 此时query的作用是:
 
@@ -1869,7 +1983,7 @@ GET /hotel/_search
 }
 ```
 
-##### Metrics聚合:
+**Metrics聚合:**
 
 ```http
 GET /hotel/_search
