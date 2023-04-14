@@ -19,7 +19,11 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c5592fa4-cd59-4d58-9847-152d76fca8ae" name="默认的" comment="init" />
+    <list default="true" id="c5592fa4-cd59-4d58-9847-152d76fca8ae" name="默认的" comment="init">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Netty.md" beforeDir="false" afterPath="$PROJECT_DIR$/Netty.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/redis笔记.md" beforeDir="false" afterPath="$PROJECT_DIR$/redis笔记.md" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -37,8 +41,10 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="settings.editor.selected.configurable" value="reference.settings.project.maven.runner" />
@@ -54,6 +60,8 @@
       <option name="presentableId" value="Default" />
       <updated>1678065258081</updated>
       <workItem from="1678065259620" duration="101000" />
+      <workItem from="1678752493783" duration="65000" />
+      <workItem from="1679923395185" duration="8000" />
     </task>
     <task id="LOCAL-00001" summary="init">
       <created>1678065292568</created>
@@ -62,7 +70,21 @@
       <option name="project" value="LOCAL" />
       <updated>1678065292568</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="init">
+      <created>1678752520140</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1678752520140</updated>
+    </task>
+    <task id="LOCAL-00003" summary="init">
+      <created>1678752546202</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1678752546202</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -78,15 +100,18 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
+    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
+    <option name="CHECK_NEW_TODO" value="false" />
     <MESSAGE value="init" />
     <option name="LAST_COMMIT_MESSAGE" value="init" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="361" y="144" key="Vcs.Push.Dialog.v2" timestamp="1678065295524">
+    <state x="361" y="144" key="Vcs.Push.Dialog.v2" timestamp="1678752547711">
       <screen x="0" y="0" width="1536" height="816" />
     </state>
-    <state x="361" y="144" key="Vcs.Push.Dialog.v2/0.0.1536.816@0.0.1536.816" timestamp="1678065295524" />
+    <state x="361" y="144" key="Vcs.Push.Dialog.v2/0.0.1536.816@0.0.1536.816" timestamp="1678752547711" />
   </component>
 </project>

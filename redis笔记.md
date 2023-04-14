@@ -282,7 +282,7 @@ jedis.close();
 
 
 
-#### Springboot使用redis
+## Springboot使用redis
 
 ##### 在项目导入redis的maven坐标
 
@@ -416,5 +416,46 @@ CacheManager是spring提供的各种缓存技术抽象接口
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-cache</artifactId>
 </dependency>
+```
+
+
+
+# Redisson
+
+依赖:
+
+```xml
+        <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson</artifactId>
+            <version>3.12.0</version>
+        </dependency>
+```
+
+配置:
+
+```java
+    @Bean(destroyMethod="shutdown")
+    public RedissonClient redisson() throws IOException {
+        //1、创建配置
+        Config config = new Config();
+        config.useSingleServer().setAddress("redis://localhost:6379");
+
+        //2、根据Config创建出RedissonClient实例
+        //Redis url should start with redis:// or rediss://
+        RedissonClient redissonClient = Redisson.create(config);
+        return redissonClient;
+    }
+```
+
+```java
+    @Autowired
+    private RedisTemplate redisTemplate;
+```
+
+文档:
+
+```apl
+https://github.com/redisson/redisson/wiki/Table-of-Content
 ```
 
